@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML Converter</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+    
+    <script>
+        let editor;
+
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: '',
+                language: 'markdown',
+                theme: 'vs-dark',
+                automaticLayout: true // 余白を自動調整
+            });
+
+            // 画面サイズ変更時にレイアウトを更新（余白を削除）
+            window.addEventListener('resize', function () {
+                editor.layout();
+            });
+        });
+
+        function convertMarkdown() {
+            const markdownText = editor.getValue();
+
+            fetch('/convert.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ markdown: markdownText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('preview').innerHTML = data.html;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function downloadHTML() {
+            const markdownText = editor.getValue();
+            const link = document.createElement('a');
+            link.href = '/convert.php?download=1&markdown=' + encodeURIComponent(markdownText);
+            link.download = 'converted.html';
+            link.click();
+        }
+    </script>
+</head>
+<body>
+    <h1>Markdown to HTML Converter</h1>
+    <div id="container">
+        <div id="editor-container"></div>
+        <button onclick="convertMarkdown()">変換</button>
+        <button onclick="downloadHTML()">HTMLとしてダウンロード</button>
+        <h2>プレビュー</h2>
+        <div id="preview"></div>
+    </div>
+</body>
+</html>
