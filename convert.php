@@ -47,7 +47,7 @@ file_put_contents($tmpFile, $data["markdown"]);
 // $scriptPath = "markdown_converter.py";  // `convert.php` と同じフォルダなら `__DIR__ . "/markdown_converter.py"`
 
 $pythonPath = "/usr/bin/python3";  
-$scriptPath = "/var/www/html/markdown_converter.py";  
+$scriptPath = "/home/ubuntu/web/Markdown-To-HTML-Converter2/markdown_converter.py";  
 
 // Pythonスクリプトを実行し、一時ファイルのパスを渡す
 $command = escapeshellcmd("$pythonPath $scriptPath " . escapeshellarg($tmpFile) . " 2>&1");
