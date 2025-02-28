@@ -43,11 +43,8 @@ $tmpFile = tempnam(sys_get_temp_dir(), "md_") . ".md";
 file_put_contents($tmpFile, $data["markdown"]);
 
 // Pythonスクリプトの実行パスを指定
-// $pythonPath = "python3";  // `which python3` で確認
-// $scriptPath = "markdown_converter.py";  // `convert.php` と同じフォルダなら `__DIR__ . "/markdown_converter.py"`
-
-$pythonPath = __DIR__ . "/myenv/bin/python3";
-$scriptPath = __DIR__ . "/markdown_converter.py";  
+$pythonPath = __DIR__ . "/venv/bin/python3";
+$scriptPath = __DIR__. "/markdown_converter.py";  
 
 // Pythonスクリプトを実行し、一時ファイルのパスを渡す
 $command = escapeshellcmd("$pythonPath $scriptPath " . escapeshellarg($tmpFile) . " 2>&1");
