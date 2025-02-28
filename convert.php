@@ -1,18 +1,20 @@
 <?php
 header("Content-Type: application/json");
 
+// Pythonインタプリタとスクリプトのパス
+$pythonPath = __DIR__ . "/venv/bin/python3";
+$scriptPath = __DIR__. "/markdown_converter.py";  
+
 // **ダウンロードリクエストの処理**
 if (isset($_GET["download"]) && isset($_GET["markdown"])) {
   $markdownText = $_GET["markdown"];
 
   // Markdownデータを一時ファイルに保存
+  // sys_get_temp_dir()はシステムの一時ディレクトリのパスを返す。Unix系は/tmp。tempnam()は第一引数のディレクトリに第二引数の接頭語がついたファイル名を生成する。
   $tmpFile = tempnam(sys_get_temp_dir(), "md_") . ".md";
   file_put_contents($tmpFile, $markdownText);
 
-  // Pythonスクリプトの実行
-  $pythonPath = "python3";  // `which python3` で確認
-  $scriptPath = __DIR__ . "/markdown_converter.py"; // `convert.php` と同じフォルダにある
-
+  // PHPのshell_exec()は標準出力のみ取得するため標準エラー出力も取得できるようにするために2(標準エラー出力)を1(標準出力)にリダイレクトさせる。
   $command = escapeshellcmd("$pythonPath $scriptPath " . escapeshellarg($tmpFile) . " 2>&1");
   $output = shell_exec($command);
 
@@ -41,10 +43,6 @@ if (!isset($data["markdown"])) {
 // Markdownデータを一時ファイルに保存
 $tmpFile = tempnam(sys_get_temp_dir(), "md_") . ".md";
 file_put_contents($tmpFile, $data["markdown"]);
-
-// Pythonスクリプトの実行パスを指定
-$pythonPath = __DIR__ . "/venv/bin/python3";
-$scriptPath = __DIR__. "/markdown_converter.py";  
 
 // Pythonスクリプトを実行し、一時ファイルのパスを渡す
 $command = escapeshellcmd("$pythonPath $scriptPath " . escapeshellarg($tmpFile) . " 2>&1");
